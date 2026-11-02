@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybersecurity Awareness Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.css">
+    <link rel="stylesheet" href="style.css">
+    <script>
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = 'sign-in.html';
+        }
+    </script>
+</head>
+<body>
+    <canvas id="cyber-bg"></canvas>
+
+    <div id="cyber-toast" class="cyber-toast">
+        <span id="toast-icon">🚀</span>
+        <span id="toast-message"></span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav-pc">
+        <div class="logo">Cybersecurity Awareness Game 🌐</div>
+        <div class="points">Points  <span id="userPoints">0</span></div>
+        <div class="user-section">
+            <div class="user-info" id="userMenuToggle">
+                <img src="user-icon.png" alt="User Icon" class="user-icon">
+                <span id="userName">User</span>
+                <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+            </div>
+            <div id="userDropdown" class="user-dropdown">
+                <button id="logoutBtn" class="logout-btn">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </div>
+        </div> 
+    </nav>
+    <div class="menu-overlay"></div>
+
+    <!--Intro Section-->
+    <section class="section0">
+        <div class="intro-text" id="home">
+        <h1 class="title-text">Cybersecurity <span>Awareness</span> Game</h1>
+        <p>Game Details......</p>
+    </div>
+    </section>
+       
+
+    <!--Levels-->
+    <section class="section1">
+        <div class="glass-tray">
+            <button id="level1-open" data-level="1" class="glass-btn" data-color="#00E5FF" data-color2="#040F25" data-fill="0.35">
+                <canvas class="liquid-canvas"></canvas> 
+                <div class="glass-gloss"></div>
+                <span class="btn-content"> 
+                    <span class="icon">🌐</span> 
+                    <span class="label">LEVEL1</span>
+                </span>
+            </button>
+
+            <button class="glass-btn" data-level="2" data-color="#6366F1" data-color2="#1E1B4B" data-fill="0.35">
+                <canvas class="liquid-canvas"></canvas> 
+                <div class="glass-gloss"></div>
+                <span class="btn-content"> 
+                    <span class="icon">🌐</span> 
+                    <span class="label">LEVEL2</span>
+                </span>
+            </button>
+
+            <button class="glass-btn" data-level="3" data-color="#0A0E1A" data-color2="#1E40AF" data-fill="0.35">
+                <canvas class="liquid-canvas"></canvas> 
+                <div class="glass-gloss"></div>
+                <span class="btn-content"> 
+                    <span class="icon">🌐</span> 
+                    <span class="label">LEVEL3</span>
+                </span>
+            </button>
+
+            <button class="glass-btn" data-level="4" data-color="#FF2CDF" data-color2="#0014FF" data-fill="0.35">
+                <canvas class="liquid-canvas"></canvas> 
+                <div class="glass-gloss"></div>
+                <span class="btn-content"> 
+                    <span class="icon">🌐</span> 
+                    <span class="label">LEVEL4</span>
+                </span>
+            </button>
+
+            <button class="glass-btn" data-level="5" data-color="#0D1117" data-color2="#00DF89" data-fill="0.35">
+                <canvas class="liquid-canvas"></canvas> 
+                <div class="glass-gloss"></div>
+                <span class="btn-content"> 
+                    <span class="icon">🌐</span> 
+                    <span class="label">LEVEL5</span>
+                </span>
+            </button>
+
+            <p class="coming-soon">More on the way...</p>
+        </div>
+
+        <div id="quiz-m" class="quiz-overlay">
+            <div class="model-content">
+                <button id="close-modal">&times;</button>
+
+                <div class="d-progress-container">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+                
+                <div id="coin-popup" class="coin-popup">+3 🪙</div>
+
+                <h2 id="modal-level-title">Loading...</h2> 
+                <div id="quiz-container">
+                    <!--Questions-->
+                </div> 
+            </div>
+        </div>
+    </section>
+    
+
+    <footer class="footer">
+        <div class="footer-items">
+            <div class="footer-links">
+                <a href="#aboutus">About us</a>
+                <a href="#report">Report</a>
+                <a href="">Other Projects</a>
+            </div>
+            <p class="glowing-text">© 2026 Cybersecurity Awareness Game. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+
+    <script src="script.js"></script> 
+</body>
+</html>  
+
+
+<!----
+<div id="q-box">
+            <p id="question">Loading Question...</p>
+            <div id="options"></div>
+        </div>
+<div id="score-box">
+            <p id="score">Score: 0</p>
+        </div>
+        <button id="next-btn">Next Question</button>   -->
+
+
+
+        
+      

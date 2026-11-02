@@ -1,0 +1,26 @@
+{
+    "level": 1,
+    "title": "Level 1: Title of the Level",
+    "questions": [
+        {
+            "question": "You recieve an email asking for your password?",
+            "options": [
+                "Enter it",
+                "Ignore/Delete it",
+                "Share it"
+            ],
+            "answer": 1
+        },
+
+        {
+            "question": "You recieve an email asking for an OTP set your email?",
+            "options": [
+                "Enter/Sending it",
+                "Ignore/Delete it",
+                "Replying to the email"
+            ],
+            "answer": 1
+        }
+    ]
+}
+
