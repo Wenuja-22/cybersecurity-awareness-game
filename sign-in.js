@@ -94,10 +94,19 @@ const initAuthApp = () => {
           firstName: firstName,
           lastName: lastName,
           email: email,
+          password: password,
           dateOfBirth: dob,
           gender: gender,
           district: district,
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
+
+          levels: {
+            level1: { totalAttempted: 0, correctCount: 0 },
+            level2: { totalAttempted: 0, correctCount: 0 },
+            level3: { totalAttempted: 0, correctCount: 0 },
+            level4: { totalAttempted: 0, correctCount: 0 },
+            level5: { totalAttempted: 0, correctCount: 0 }
+          }
         });
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('currentUsername', firstName);
@@ -279,4 +288,24 @@ function animate() {
 animate();
 
 
+import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { db } from "./firebase-config.js";
+
+async function saveLevelProgress(levelKey, newCorrectCount, newTotalAttempted) {
+  const userEmail = localStorage.getItem('userEmail');
+  if (!userEmail) return;
+
+  const userId = userEmail.toLowerCase().replace(/[@.]/g, "_");
+  const userDocRef = doc(db, "users", userId);
+
+  try {
+    await updateDoc(userDocRef, {
+      [`levels.${levelKey}.correctCount`]: increment(newCorrectCount),
+      [`levels.${levelKey}.totalAttempted`]: increment(newTotalAttempted)
+    });
+    console.log(`Progress for ${levelKey} saved successfully!`);
+  }catch(error){
+    console.error("Error updating level progress:", error);
+  }
+}
 
