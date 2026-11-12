@@ -27,6 +27,27 @@ window.showToast = function(message, type = 'success') {
   }, 3500)
 }
 
+import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { db } from "./firebase-config.js";
+
+async function saveLevelProgress(levelKey, newCorrectCount, newTotalAttempted) {
+  const userEmail = localStorage.getItem('userEmail');
+  if (!userEmail) return;
+
+  const userId = userEmail.toLowerCase().replace(/[@.]/g, "_");
+  const userDocRef = doc(db, "users", userId);
+
+  try {
+    await updateDoc(userDocRef, {
+      [`levels.${levelKey}.correctCount`]: increment(newCorrectCount),
+      [`levels.${levelKey}.totalAttempted`]: increment(newTotalAttempted)
+    });
+    console.log(`Progress for ${levelKey} saved successfully!`);
+  }catch(error){
+    console.error("Error updating level progress:", error);
+  }
+}
+
 window.togglePassword = function(inputID, iconBtn) {
   const input = document.getElementById(inputID);
   const icon = iconBtn.querySelector('i') || iconBtn;
@@ -288,24 +309,5 @@ function animate() {
 animate();
 
 
-import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { db } from "./firebase-config.js";
 
-async function saveLevelProgress(levelKey, newCorrectCount, newTotalAttempted) {
-  const userEmail = localStorage.getItem('userEmail');
-  if (!userEmail) return;
-
-  const userId = userEmail.toLowerCase().replace(/[@.]/g, "_");
-  const userDocRef = doc(db, "users", userId);
-
-  try {
-    await updateDoc(userDocRef, {
-      [`levels.${levelKey}.correctCount`]: increment(newCorrectCount),
-      [`levels.${levelKey}.totalAttempted`]: increment(newTotalAttempted)
-    });
-    console.log(`Progress for ${levelKey} saved successfully!`);
-  }catch(error){
-    console.error("Error updating level progress:", error);
-  }
-}
 
