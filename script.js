@@ -407,38 +407,7 @@ closeModalBtn.addEventListener('click', () => {
   modal.style.display = 'none';
 });
 
-import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { db } from "./firebase-config.js";
 
-async function saveLevel(levelKey, attempted, correct) {
-  const userEmail = localStorage.getItem('userEmail');
-  if (!userEmail) return;
-
-  const userId = userEmail.toLowerCase().replace(/[@.]/g, "_");
-  const userDocRef = doc(db, "users", userId);
-
-  try {
-    const userSnap = await getDoc(userDocRef);
-    if(!userSnap.exists()) return;
-
-    const userData = userSnap.data();
-    const levelData = userData.levels && userData.levels[levelKey];
-
-    if (levelData && levelData.totalAttempted > 0) {
-      console.log(`Level ${levelKey} already completed. Points will not be added again.`);
-      return;
-    }
-
-    await updateDoc(userDocRef, {
-      [`levels.${levelKey}.totalAttempted`]: attempted,
-      [`levels.${levelKey}.correctCount`]: correct
-    });
-
-    console.log(`First-time score for ${levelKey} recorded successfully!`);
-  }catch(error) {
-    console.error("Error updating level progress:", error);
-  }
-}
 
 //User Data initialize
 let user = {
