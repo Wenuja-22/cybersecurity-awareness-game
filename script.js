@@ -1,3 +1,6 @@
+import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { db } from "./firebase-config.js";
+
 document.addEventListener('DOMContentLoaded', () => {
   const buttons = document.querySelectorAll('.glass-btn'); 
   buttons.forEach((btn) => { 
@@ -239,17 +242,12 @@ function handleAnswerSelection(selectedBtn, selectedIndex, correctIndex) {
     correctAnswersCount++;
     levelscore += 3;
 
-    const currentTotal = parseInt(localStorage.getItem('totalUserPoints')) || 0;
-    const newTotal = currentTotal + 3;
-    localStorage.setItem('totalUserPoints', newTotal);
-    animatePoints(currentTotal, newTotal);
-    
     triggerCoinAnimation();
     if (coinPopup) {
       coinPopup.classList.add('show');
       setTimeout(() => coinPopup.classList.remove('show'), 800);
     }
-  }else{
+  } else {
     selectedBtn.style.background = 'rgba(255, 0, 80, 0.3)';
     selectedBtn.style.borderColor = "#ff0050";
     buttons[correctIndex].style.background = 'rgba(0, 255, 102, 0.3)';
@@ -319,7 +317,7 @@ window.selectOption = function(element, selected, correct) {
   }, 1000);
 }
 
-function finishQuiz() {
+async function finishQuiz() {
   const totalQuestions = questions.length;
   const finalPercent = totalQuestions > 0 ? (correctAnswersCount / totalQuestions) * 100 : 0;
   const progressFill = document.querySelector('.progress-fill');
@@ -327,30 +325,69 @@ function finishQuiz() {
     progressFill.style.width = `${finalPercent}%`;
   }
 
-  if (currentScore > 0) {
+  const levelKey = `level${currentLevel}`;
+  let awardedPoints = 0;
+  let alreadyPlayed = false;
+
+  const userEmail = localStorage.getItem('userEmail');
+  if (userEmail) {
+    try {
+      const userId = userEmail.toLowerCase().replace(/[@.]/g, "_");
+      const userDocRef = doc(db, "users", userId);
+      const userSnap = await getDoc(userDocRef);
+
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        const levelData = userData.levels && userData.levels[levelKey];
+
+        if (levelData && levelData.totalAttempted > 0) {
+          alreadyPlayed = true;
+        } else {
+          await updateDoc(userDocRef, {
+            [`levels.${levelKey}.totalAttempted`]: totalQuestions,
+            [`levels.${levelKey}.correctCount`]: correctAnswersCount
+          });
+          awardedPoints = levelscore;
+        }
+      }
+    } catch (error) {
+      console.error("Error checking/saving level progress:", error);
+    }
+  } else {
+    // Fallback if playing without a logged-in email
+    awardedPoints = levelscore;
+  }
+
+  if (awardedPoints > 0) {
     const currentTotal = parseInt(localStorage.getItem('totalUserPoints')) || 0;
-    const newTotal = currentTotal + currentScore;
+    const newTotal = currentTotal + awardedPoints;
     localStorage.setItem('totalUserPoints', newTotal);
     animatePoints(currentTotal, newTotal);
   }
-  
+
+  const scoreMessage = alreadyPlayed
+    ? `Replay complete — no extra points added (+0)`
+    : `Total Score +${awardedPoints}`;
+
   quizContainer.innerHTML = `
     <div class="finish-screen-animation" style="text-align: center; padding: 20px;">
-      <h3 style="color: #00ff66; font-size: 24px; margin-botton: 12px;">Level Complete! 🎉</h3>
-      <p style="font-size: 16px; color: #fff; margin-botton: 12px;">You got ${correctAnswersCount} out of ${questions.length} correct.</p>
-      <p style="font-size: 18px; color: #ffbe0b; font-weight: bold; margin-top: 12px;">Total Score +${levelscore} 🪙</p>
+      <h3 style="color: #00ff66; font-size: 24px; margin-bottom: 12px;">Level Complete!</h3>
+      <p style="font-size: 16px; color: #fff; margin-bottom: 12px;">You got ${correctAnswersCount} out of ${questions.length} correct.</p>
+      <p style="font-size: 18px; color: #ffbe0b; font-weight: bold; margin-top: 12px;">${scoreMessage}</p>
     </div>
   `;
-  
+
+  levelscore = 0;
+
   setTimeout(() => {
     const maxUnlocked = getMaxUnlockedLevel();
-      
+
     if (currentLevel == maxUnlocked && currentLevel < 5) {
       localStorage.setItem('maxUnlockedLevel', currentLevel + 1);
       updateStatus();
-      showCyberToast(`Awesome! Level ${currentLevel} Completed! Level ${currentLevel + 1} is now unlocked!`, '🚀');
-    }else{
-      showCyberToast(`Level ${currentLevel} Completed Successfully!`, '🎉');
+      showCyberToast(`Awesome! Level ${currentLevel} Completed! Level ${currentLevel + 1} is now unlocked!`);
+    } else {
+      showCyberToast(`Level ${currentLevel} Completed Successfully!`);
     }
     closeModal();
   }, 3000);
@@ -374,13 +411,13 @@ function showCyberToast(message, icon = '🚀', duration = 4000) {
 }
 
 function closeModal() {
-  let pointsToCommit = levelscore;
   levelscore = 0;
-  if (pointsToCommit > 0) {
-    const currentTotal = parseInt(localStorage.getItem('totalUserPoints')) || 0;
-    const newTotal = currentTotal + levelscore;
-    localStorage.setItem('totalUserPoints', newTotal);
-  }
+  modal.classList.remove('active');
+
+  setTimeout(() => {
+    modal.style.display = 'none';
+  }, 300);
+}
 
   modal.classList.remove('active');
 
@@ -393,8 +430,6 @@ function closeModal() {
     }
   }, 300);
 
-    
-  
   modal.classList.remove('active');
   setInterval(() => {
     modal.style.display = 'none'
